@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name Generator</title>
+    <title>Mega Name Generator</title>
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --accent: #ec4899;
+            /* Updated palette for a more vibrant look */
+            --primary: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #f43f5e;
             --dark: #0f172a;
             --light: #f8fafc;
         }
@@ -26,91 +27,102 @@
             color: var(--light);
         }
 
-        /* Floating background particles for "fun" vibe */
+        /* Floating background particles */
         .bg-shape {
             position: absolute;
             border-radius: 50%;
-            opacity: 0.1;
+            opacity: 0.15;
             z-index: 0;
+            filter: blur(60px);
             animation: float 20s infinite linear;
         }
-        .shape-1 { width: 300px; height: 300px; background: var(--primary); top: -50px; left: -50px; }
-        .shape-2 { width: 200px; height: 200px; background: var(--accent); bottom: 50px; right: -50px; animation-duration: 15s; }
-        .shape-3 { width: 150px; height: 150px; background: var(--secondary); top: 20%; right: 20%; animation-duration: 25s; }
+        .shape-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; left: -100px; }
+        .shape-2 { width: 300px; height: 300px; background: var(--accent); bottom: -50px; right: -50px; animation-duration: 15s; }
+        .shape-3 { width: 200px; height: 200px; background: var(--secondary); top: 30%; left: 40%; animation-duration: 25s; opacity: 0.1; }
 
         .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem;
-            border-radius: 24px;
+            padding: 3.5rem;
+            border-radius: 30px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.6);
             z-index: 10;
             width: 90%;
-            max-width: 500px;
+            max-width: 550px;
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
-            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 3px;
+            margin-bottom: 2.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
         }
 
         .display-box {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
-            padding: 2rem 1rem;
-            margin-bottom: 2rem;
-            min-height: 80px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 2.5rem 1rem;
+            margin-bottom: 2.5rem;
+            min-height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            overflow: hidden; /* Hide long names spilling out */
         }
 
         .name-text {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
-            background: linear-gradient(to right, #fff, #cbd5e1);
+            white-space: nowrap;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: transform 0.1s;
+            transition: all 0.1s;
         }
 
         /* The Winner Effect */
         .winner {
             border-color: var(--accent);
-            box-shadow: 0 0 30px var(--accent);
-            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(244, 63, 94, 0.1);
+            box-shadow: 0 0 40px rgba(244, 63, 94, 0.4), inset 0 0 20px rgba(244, 63, 94, 0.2);
+            animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
         .winner .name-text {
-            background: linear-gradient(to right, var(--accent), var(--secondary));
+            background: linear-gradient(to bottom, #fff, var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transform: scale(1.1);
+            transform: scale(1.15);
+            text-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         button {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
-            padding: 1rem 3rem;
-            font-size: 1.2rem;
-            font-weight: bold;
+            padding: 1.2rem 3.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             color: white;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 30px -5px rgba(79, 70, 229, 0.5);
         }
 
         button:active {
@@ -118,19 +130,27 @@
         }
 
         button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            opacity: 0.6;
+            cursor: default;
             transform: none;
+            filter: grayscale(0.5);
+        }
+
+        /* Counter for fun */
+        .counter {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.3);
+            margin-top: 20px;
         }
 
         @keyframes float {
             0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(20px, 40px) rotate(180deg); }
+            50% { transform: translate(30px, 50px) rotate(180deg); }
             100% { transform: translate(0, 0) rotate(360deg); }
         }
 
         @keyframes pop {
-            0% { transform: scale(1); }
+            0% { transform: scale(0.9); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
@@ -155,32 +175,58 @@
     <canvas id="confetti"></canvas>
 
     <div class="container">
-        <h1>Random Name Picker</h1>
+        <h1>Official Selection</h1>
         
         <div class="display-box" id="displayBox">
-            <div class="name-text" id="nameText">Ready?</div>
+            <div class="name-text" id="nameText">WAITING...</div>
         </div>
 
-        <button id="spinBtn" onclick="pickName()">Select Winner</button>
+        <button id="spinBtn" onclick="pickName()">Draw Name</button>
+        <div class="counter" id="poolCounter">Pool size: Loading...</div>
     </div>
 
     <script>
         // 1. CONFIGURATION
         const TARGET_NAME = "Sharon Granger"; // <--- The Rig
-        const POOL_SIZE = 500;
+        const POOL_SIZE = 1500; // Increased to 1500 for massive scale
         
-        // 2. GENERATE DUMMY DATA (To simulate 500 names)
-        const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", "Alice", "Bob", "Charlie", "Diana", "Evan", "Fiona"];
-        const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez"];
+        // 2. GENERATE EXTENSIVE DUMMY DATA
+        // Expanded lists to create more unique combinations
+        const firstNames = [
+            "James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "David", "Elizabeth", 
+            "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", 
+            "Christopher", "Nancy", "Daniel", "Lisa", "Matthew", "Betty", "Anthony", "Margaret", "Mark", "Sandra", 
+            "Donald", "Ashley", "Steven", "Kimberly", "Paul", "Emily", "Andrew", "Donna", "Joshua", "Michelle", 
+            "Kenneth", "Dorothy", "Kevin", "Carol", "Brian", "Amanda", "George", "Melissa", "Edward", "Deborah",
+            "Ronald", "Stephanie", "Timothy", "Rebecca", "Jason", "Sharon", "Jeffrey", "Laura", "Ryan", "Cynthia",
+            "Jacob", "Kathleen", "Gary", "Amy", "Nicholas", "Shirley", "Eric", "Angela", "Jonathan", "Helen",
+            "Stephen", "Anna", "Larry", "Brenda", "Justin", "Pamela", "Scott", "Nicole", "Brandon", "Emma"
+        ];
+        
+        const lastNames = [
+            "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", 
+            "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", 
+            "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", 
+            "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", 
+            "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts",
+            "Gomez", "Phillips", "Evans", "Turner", "Diaz", "Parker", "Cruz", "Edwards", "Collins", "Reyes",
+            "Stewart", "Morris", "Morales", "Murphy", "Cook", "Rogers", "Gutierrez", "Ortiz", "Morgan", "Cooper"
+        ];
         
         let namePool = [];
         
-        // Populate the pool with 500 random names
-        for(let i = 0; i < POOL_SIZE; i++) {
-            const randomFirst = firstNames[Math.floor(Math.random() * firstNames.length)];
-            const randomLast = lastNames[Math.floor(Math.random() * lastNames.length)];
-            namePool.push(`${randomFirst} ${randomLast}`);
+        // Generate the massive list
+        function initPool() {
+            for(let i = 0; i < POOL_SIZE; i++) {
+                const randomFirst = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const randomLast = lastNames[Math.floor(Math.random() * lastNames.length)];
+                namePool.push(`${randomFirst} ${randomLast}`);
+            }
+            // Update UI
+            document.getElementById('poolCounter').innerText = `Pool size: ${POOL_SIZE.toLocaleString()} entries`;
         }
+
+        initPool();
 
         // 3. LOGIC
         const nameText = document.getElementById('nameText');
@@ -192,34 +238,45 @@
             if (isSpinning) return;
             isSpinning = true;
             spinBtn.disabled = true;
-            spinBtn.innerText = "Choosing...";
+            spinBtn.innerText = "Scanning...";
             
             // Reset styles
             displayBox.classList.remove('winner');
             nameText.style.opacity = 1;
 
-            let speed = 50; // Initial speed (ms)
+            // ANIMATION PHYSICS
+            // Start very fast (30ms) to simulate digging through a big list
+            let speed = 30; 
             let counter = 0;
             let loops = 0;
             
             // The cycling effect
             const cycle = () => {
-                // Pick a random name from the pool to display temporarily
+                // Pick a random name from the pool
                 const randomName = namePool[Math.floor(Math.random() * namePool.length)];
                 nameText.innerText = randomName;
 
                 counter++;
                 
                 // Logic to slow down the spinning
-                if (counter > 5 && speed < 300) {
-                    speed += 20; 
+                // We let it run fast for longer (loops > 20) before stopping
+                if (counter > 4) { // Update speed every 4 frames
+                    // Exponential slowdown curve
+                    if (loops < 10) {
+                        speed += 2; // Slow down very gradually at first
+                    } else if (loops < 20) {
+                        speed += 10; // Medium slowdown
+                    } else {
+                        speed += 30; // Rapid braking at the end
+                    }
+                    
                     counter = 0;
                     loops++;
                 }
 
                 // STOP CONDITION
-                // After slowing down enough (loops > 10), we trigger the rig.
-                if (loops > 10) {
+                // Wait for speed to become very slow (>= 400ms)
+                if (speed >= 400) {
                     finalizeSelection();
                 } else {
                     setTimeout(cycle, speed);
@@ -242,7 +299,7 @@
             triggerConfetti();
         }
 
-        // 4. CONFETTI EFFECT (Simple Pure JS implementation)
+        // 4. CONFETTI EFFECT
         function triggerConfetti() {
             const canvas = document.getElementById('confetti');
             const ctx = canvas.getContext('2d');
@@ -250,17 +307,18 @@
             canvas.height = window.innerHeight;
 
             const particles = [];
-            const particleCount = 100;
+            const particleCount = 150; // More confetti!
 
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
                     x: window.innerWidth / 2,
                     y: window.innerHeight / 2,
-                    vx: (Math.random() - 0.5) * 20,
-                    vy: (Math.random() - 0.5) * 20,
+                    vx: (Math.random() - 0.5) * 25,
+                    vy: (Math.random() - 0.5) * 25,
                     size: Math.random() * 8 + 4,
-                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                    life: 100
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                    life: 150,
+                    gravity: 0.4
                 });
             }
 
@@ -268,12 +326,12 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 let active = false;
 
-                particles.forEach((p, index) => {
+                particles.forEach((p) => {
                     if (p.life > 0) {
                         active = true;
                         p.x += p.vx;
                         p.y += p.vy;
-                        p.vy += 0.5; // Gravity
+                        p.vy += p.gravity;
                         p.life--;
                         p.size *= 0.96;
 
@@ -288,6 +346,13 @@
             }
             draw();
         }
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confetti');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
