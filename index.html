@@ -1,41 +1,292 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Totally Fair Name Picker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Generator</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f9; }
-        #wheel-container { margin: 20px auto; width: 300px; height: 300px; border: 10px solid #333; border-radius: 50%; position: relative; overflow: hidden; background: conic-gradient(#ff6384, #36a2eb, #cc65fe, #ffce56); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        #pointer { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 30px solid red; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
-        #result { margin-top: 20px; font-size: 24px; font-weight: bold; color: #333; }
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--dark), #1e1b4b);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--light);
+        }
+
+        /* Floating background particles for "fun" vibe */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+            animation: float 20s infinite linear;
+        }
+        .shape-1 { width: 300px; height: 300px; background: var(--primary); top: -50px; left: -50px; }
+        .shape-2 { width: 200px; height: 200px; background: var(--accent); bottom: 50px; right: -50px; animation-duration: 15s; }
+        .shape-3 { width: 150px; height: 150px; background: var(--secondary); top: 20%; right: 20%; animation-duration: 25s; }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .display-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .name-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.1s;
+        }
+
+        /* The Winner Effect */
+        .winner {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent);
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .winner .name-text {
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: scale(1.1);
+        }
+
+        button {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(20px, 40px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Confetti Canvas */
+        #confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Random Name Picker (500 Names)</h2>
-    <div id="pointer"></div>
-    <div id="wheel-container"></div>
-    <br>
-    <button onclick="spinWheel()">SPIN THE WHEEL</button>
-    <p id="result"></p>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+    <canvas id="confetti"></canvas>
+
+    <div class="container">
+        <h1>Random Name Picker</h1>
+        
+        <div class="display-box" id="displayBox">
+            <div class="name-text" id="nameText">Ready?</div>
+        </div>
+
+        <button id="spinBtn" onclick="pickName()">Select Winner</button>
+    </div>
 
     <script>
-        function spinWheel() {
-            const wheel = document.getElementById('wheel-container');
-            const resultText = document.getElementById('result');
-            
-            // The "Rig": We spin it a high number of degrees 
-            // but always end at the same offset.
-            const totalSpins = 5; 
-            const finalAngle = (totalSpins * 360); 
-            
-            wheel.style.transform = rotate(${finalAngle}deg);
-            resultText.innerText = "Spinning...";
+        // 1. CONFIGURATION
+        const TARGET_NAME = "Sharon Granger"; // <--- The Rig
+        const POOL_SIZE = 500;
+        
+        // 2. GENERATE DUMMY DATA (To simulate 500 names)
+        const firstNames = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", "Alice", "Bob", "Charlie", "Diana", "Evan", "Fiona"];
+        const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez"];
+        
+        let namePool = [];
+        
+        // Populate the pool with 500 random names
+        for(let i = 0; i < POOL_SIZE; i++) {
+            const randomFirst = firstNames[Math.floor(Math.random() * firstNames.length)];
+            const randomLast = lastNames[Math.floor(Math.random() * lastNames.length)];
+            namePool.push(`${randomFirst} ${randomLast}`);
+        }
 
-            setTimeout(() => {
-                // The big reveal
-                resultText.innerText = "Winner: Sharon Granger!";
-            }, 4000);
+        // 3. LOGIC
+        const nameText = document.getElementById('nameText');
+        const displayBox = document.getElementById('displayBox');
+        const spinBtn = document.getElementById('spinBtn');
+        let isSpinning = false;
+
+        function pickName() {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinBtn.disabled = true;
+            spinBtn.innerText = "Choosing...";
+            
+            // Reset styles
+            displayBox.classList.remove('winner');
+            nameText.style.opacity = 1;
+
+            let speed = 50; // Initial speed (ms)
+            let counter = 0;
+            let loops = 0;
+            
+            // The cycling effect
+            const cycle = () => {
+                // Pick a random name from the pool to display temporarily
+                const randomName = namePool[Math.floor(Math.random() * namePool.length)];
+                nameText.innerText = randomName;
+
+                counter++;
+                
+                // Logic to slow down the spinning
+                if (counter > 5 && speed < 300) {
+                    speed += 20; 
+                    counter = 0;
+                    loops++;
+                }
+
+                // STOP CONDITION
+                // After slowing down enough (loops > 10), we trigger the rig.
+                if (loops > 10) {
+                    finalizeSelection();
+                } else {
+                    setTimeout(cycle, speed);
+                }
+            };
+
+            cycle();
+        }
+
+        function finalizeSelection() {
+            // THE RIG: Hardcode the result here
+            nameText.innerText = TARGET_NAME;
+            
+            // Visual Flair
+            displayBox.classList.add('winner');
+            spinBtn.innerText = "Select Again";
+            spinBtn.disabled = false;
+            isSpinning = false;
+            
+            triggerConfetti();
+        }
+
+        // 4. CONFETTI EFFECT (Simple Pure JS implementation)
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const particleCount = 100;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2,
+                    vx: (Math.random() - 0.5) * 20,
+                    vy: (Math.random() - 0.5) * 20,
+                    size: Math.random() * 8 + 4,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    life: 100
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+
+                particles.forEach((p, index) => {
+                    if (p.life > 0) {
+                        active = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.5; // Gravity
+                        p.life--;
+                        p.size *= 0.96;
+
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                if (active) requestAnimationFrame(draw);
+            }
+            draw();
         }
     </script>
 </body>
